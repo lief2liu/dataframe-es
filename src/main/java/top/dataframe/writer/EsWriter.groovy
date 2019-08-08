@@ -45,7 +45,7 @@ class EsWriter implements DataFrameWriter {
             client?.close()
         }
 
-        0
+        df.size()
     }
 
     private String bulkUpsert(RestClient client, String dsl) {
