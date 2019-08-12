@@ -51,9 +51,10 @@ class EsReader implements DataFrameReader {
         String res = queryForString(client, dsl, index, type)
         Map<String, Object> resMap = new JsonSlurper().parseText(res) as Map
         List resList = resMap["hits"]["hits"] as List
+        Map aggMap = ["total": resMap["hits"]["total"]]
         List<Map<String, Object>> rows
         if (resList.size() == 0) {
-            if(!resMap["aggregations"]){
+            if (!resMap["aggregations"]) {
                 return null
             }
             rows = resMap["aggregations"]["group_count"]["buckets"] as List<Map<String, Object>>
@@ -63,11 +64,16 @@ class EsReader implements DataFrameReader {
                 cloMap.remove("score")
                 [id: it["_id"]] + cloMap
             }
+            Map aggs = resMap["aggregations"] as Map
+            if (aggs) {
+                aggMap.putAll(aggs)
+            }
         }
-        if(rows.size()==0){
+
+        if (rows.size() == 0) {
             return null
         }
-        [rows, ["total": resMap["hits"]["total"]]]
+        [rows, aggMap]
     }
 
     public static void main(String[] args) {
@@ -89,7 +95,7 @@ class EsReader implements DataFrameReader {
             3086943
             3830891
             3826977 """
-                xx.eachLine {String it->
+        xx.eachLine { String it ->
             print "'${it.trim()}',"
         }
     }
