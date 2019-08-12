@@ -57,7 +57,11 @@ class EsReader implements DataFrameReader {
             if (!resMap["aggregations"]) {
                 return null
             }
-            rows = resMap["aggregations"]["group_count"]["buckets"] as List<Map<String, Object>>
+            try {
+                rows = resMap["aggregations"]["group_count"]["buckets"] as List<Map<String, Object>>
+            } catch (Exception e) {
+                rows = []
+            }
         } else {
             rows = resList.collect {
                 Map cloMap = it["_source"] as Map
