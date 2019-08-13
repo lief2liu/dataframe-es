@@ -53,8 +53,9 @@ class EsReader implements DataFrameReader {
         List resList = resMap["hits"]["hits"] as List
         Map aggMap = ["total": resMap["hits"]["total"]]
         List<Map<String, Object>> rows
+        Map aggs = resMap["aggregations"] as Map
         if (resList.size() == 0) {
-            if (!resMap["aggregations"]) {
+            if (!aggs) {
                 return null
             }
             try {
@@ -68,39 +69,17 @@ class EsReader implements DataFrameReader {
                 cloMap.remove("score")
                 [id: it["_id"]] + cloMap
             }
-            Map aggs = resMap["aggregations"] as Map
-            if (aggs) {
-                aggMap.putAll(aggs)
-            }
         }
 
         if (rows.size() == 0) {
             return null
         }
-        [rows, aggMap]
-    }
 
-    public static void main(String[] args) {
-        String xx = """ 3827245
-            3829571
-            3082734
-            3850239
-            3871237
-            3932440
-            3833555
-            4027493
-            3884923
-            3875995
-            3820400
-            3817150
-            3834750
-            3088234
-            3088234
-            3086943
-            3830891
-            3826977 """
-        xx.eachLine { String it ->
-            print "'${it.trim()}',"
+        if (aggs) {
+            aggMap.putAll(aggs)
+            aggMap.remove("group_count")
         }
+
+        [rows, aggMap]
     }
 }
