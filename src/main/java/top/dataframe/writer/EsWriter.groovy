@@ -12,7 +12,7 @@ import top.dataframe.DataFrame
 import top.dataframe.dao.EsConn
 
 @CompileStatic
-class EsWriter implements DataFrameWriter {
+class EsWriter implements DataFrameWriter,Serializable {
     private Map<String, Object> esInfo
     private String index
     private String type

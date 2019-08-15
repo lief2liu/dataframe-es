@@ -11,7 +11,7 @@ import org.elasticsearch.client.RestClient
 import top.dataframe.dao.EsConn
 
 @CompileStatic
-class EsReader implements DataFrameReader {
+class EsReader implements DataFrameReader,Serializable {
     private Map<String, Object> esInfo
     private String index
     private String type
