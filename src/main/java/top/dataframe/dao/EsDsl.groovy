@@ -51,6 +51,9 @@ class EsDsl {
         if (!value) {
             return ""
         }
+        if ("wildcard" == way) {
+            value += "*"
+        }
         """
             {
               "$way": {
