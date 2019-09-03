@@ -7,7 +7,7 @@ import org.apache.http.nio.entity.NStringEntity
 import org.elasticsearch.client.RestClient
 
 @CompileStatic
-class EsUtil {
+class EsOp {
     static void createIndexWithMapping(Map<String, Object> esInfo, String index, String type, String mapping) {
         RestClient client = new EsConn().get(esInfo)
         try {
@@ -15,6 +15,16 @@ class EsUtil {
             client.performRequest("PUT", "/$index", Collections.singletonMap("pretty", "true"), entity)
             entity = new NStringEntity(mapping, ContentType.APPLICATION_JSON)
             client.performRequest("POST", "/$index/$type/_mapping", Collections.singletonMap("pretty", "true"), entity)
+        } finally {
+            client?.close()
+        }
+    }
+
+    static void dropIndex(Map<String, Object> esInfo, String index) {
+        RestClient client = new EsConn().get(esInfo)
+        try {
+            HttpEntity entity = new NStringEntity("", ContentType.APPLICATION_JSON)
+            client.performRequest("DELETE", "/$index", Collections.singletonMap("pretty", "true"), entity)
         } finally {
             client?.close()
         }
