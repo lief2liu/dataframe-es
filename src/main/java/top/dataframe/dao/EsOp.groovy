@@ -4,6 +4,8 @@ import groovy.transform.CompileStatic
 import org.apache.http.HttpEntity
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
+import org.apache.http.util.EntityUtils
+import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
 
 @CompileStatic
@@ -27,6 +29,19 @@ class EsOp {
             client.performRequest("DELETE", "/$index", Collections.singletonMap("pretty", "true"), entity)
         } finally {
             client?.close()
+        }
+    }
+
+    static String queryForString(RestClient client, String dsl, String index, String type) {
+        try {
+            HttpEntity entity = new NStringEntity(dsl, ContentType.APPLICATION_JSON)
+            Response response = client.performRequest("POST", "/$index/$type/_search",
+                    Collections.singletonMap("pretty", "true"), entity)
+            String res = EntityUtils.toString(response.getEntity())
+            return res
+        } catch (IOException e) {
+            e.printStackTrace()
+            return null
         }
     }
 }

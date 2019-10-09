@@ -12,7 +12,7 @@ import top.dataframe.DataFrame
 import top.dataframe.dao.EsConn
 
 @CompileStatic
-class EsWriter implements DataFrameWriter,Serializable {
+class EsWriter implements DataFrameWriter, Serializable {
     private Map<String, Object> esInfo
     private String index
     private String type
@@ -36,11 +36,9 @@ class EsWriter implements DataFrameWriter,Serializable {
                 """
                     {"update":{"_id":"$id"}}\n{"doc":${new JsonOutput().toJson(it)}, "doc_as_upsert" : true}\n
                 """.toString().trim()
-            }.inject { a, b ->
-                a + "\n" + b
-            }
+            }.join("\n") + "\n{}"
 
-            bulkUpsert(client, dsl + "\n{}")
+            bulkUpsert(client, dsl)
         } finally {
             client?.close()
         }
