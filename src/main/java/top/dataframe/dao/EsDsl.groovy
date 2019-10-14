@@ -57,7 +57,7 @@ class EsDsl {
         """
             {
               "$way": {
-                "$key": "${value.toLowerCase()}"
+                "$key": "$value"
               }
             }
         """.toString().trim()
